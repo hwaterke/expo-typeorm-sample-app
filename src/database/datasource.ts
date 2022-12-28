@@ -1,12 +1,14 @@
 import * as SQLite from 'expo-sqlite'
 import {DataSource} from 'typeorm/browser'
-import {Item} from './entities/Item'
+import {ENTITIES} from './entities'
+import {MIGRATIONS} from './migrations'
 
 export const DATASOURCE = new DataSource({
   type: 'expo',
   database: 'app.db',
   driver: SQLite,
-  entities: [Item],
-  synchronize: true,
+  entities: ENTITIES,
+  migrations: MIGRATIONS,
+  migrationsRun: true,
   logging: true,
 })
