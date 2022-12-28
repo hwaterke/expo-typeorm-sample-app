@@ -5,6 +5,7 @@ import {DATASOURCE} from './database/datasource'
 import {Item} from './database/entities/Item'
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
+import * as DocumentPicker from 'expo-document-picker'
 
 export const App = () => {
   useEffect(() => {
@@ -34,6 +35,35 @@ export const App = () => {
     main()
   }, [])
 
+  const importDatabase = async () => {
+    // Close the current database
+    await DATASOURCE.destroy()
+
+    // Import file
+    const file = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: true,
+    })
+
+    if (file.type === 'success') {
+      if (
+        !(
+          await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')
+        ).exists
+      ) {
+        await FileSystem.makeDirectoryAsync(
+          FileSystem.documentDirectory + 'SQLite'
+        )
+      }
+      await FileSystem.copyAsync({
+        from: file.uri,
+        to: FileSystem.documentDirectory + 'SQLite/app.db',
+      })
+    }
+
+    // Restart the datasource
+    await DATASOURCE.initialize()
+  }
+
   const exportDatabase = () => {
     return Sharing.shareAsync(FileSystem.documentDirectory + 'SQLite/app.db')
   }
@@ -43,6 +73,7 @@ export const App = () => {
       <Text>Open up App.tsx to start working on your app!</Text>
       <StatusBar style="auto" />
       <Button title="Export database" onPress={exportDatabase} />
+      <Button title="Import database" onPress={importDatabase} />
     </View>
   )
 }
