@@ -1,8 +1,10 @@
-import {StyleSheet, Text, View} from 'react-native'
+import {Button, StyleSheet, Text, View} from 'react-native'
 import {StatusBar} from 'expo-status-bar'
 import React, {useEffect} from 'react'
 import {DATASOURCE} from './database/datasource'
 import {Item} from './database/entities/Item'
+import * as FileSystem from 'expo-file-system'
+import * as Sharing from 'expo-sharing'
 
 export const App = () => {
   useEffect(() => {
@@ -32,10 +34,15 @@ export const App = () => {
     main()
   }, [])
 
+  const exportDatabase = () => {
+    return Sharing.shareAsync(FileSystem.documentDirectory + 'SQLite/app.db')
+  }
+
   return (
     <View style={styles.container}>
       <Text>Open up App.tsx to start working on your app!</Text>
       <StatusBar style="auto" />
+      <Button title="Export database" onPress={exportDatabase} />
     </View>
   )
 }
